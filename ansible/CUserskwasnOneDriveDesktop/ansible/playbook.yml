@@ -1,0 +1,53 @@
+- name: Configure web server
+  hosts: web
+  become: yes
+  tasks:
+  
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Create directory structure for web documents
+      file:
+        path: /web/html
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Copy Nginx configuration file to the server
+      template:
+        src: files/nginx.conf        
+        dest: /etc/nginx/sites-available/default
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart nginx
+
+    - name: Create a symbolic link to enable the Nginx site
+      file:
+        src: /etc/nginx/sites-available/default
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+      notify: Restart nginx
+
+    - name: Generate index.html file from template
+      template:
+        src: templates/index.html.j2
+        dest: /web/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Reload Nginx service
+      service:
+        name: nginx
+        state: reloaded
+
+  handlers:
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+
