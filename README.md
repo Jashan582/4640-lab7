@@ -31,4 +31,5 @@ ansible-playbook -i inventory/hosts.yml playbook.yml
 
 This command runs a ansible playbook on the hosts defined in the inventory file
 
+![image](https://github.com/user-attachments/assets/566b0ed1-bf30-4414-b447-ba02861e39cd)
 
